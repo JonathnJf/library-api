@@ -1,9 +1,11 @@
 package com.empresa.libraryapi.api.resource;
 
+import com.empresa.libraryapi.api.BookController;
 import com.empresa.libraryapi.api.dto.BookDTO;
 import com.empresa.libraryapi.exception.BusinessException;
 import com.empresa.libraryapi.model.entity.Book;
 import com.empresa.libraryapi.service.BookService;
+import com.empresa.libraryapi.service.LoanService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
@@ -36,7 +38,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = BookController.class)
 @AutoConfigureMockMvc
 public class BookControllerTest {
-
     static String BOOK_API = "/api/books";
 
     @Autowired
@@ -45,6 +46,8 @@ public class BookControllerTest {
     @MockBean
     BookService service;
 
+    @MockBean
+    LoanService loanService;
     @Test
     @DisplayName("Deve criar um livro")
     public void createBookTest() throws Exception {
@@ -59,12 +62,12 @@ public class BookControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .content(json);
         mvc
-            .perform(request)
-            .andExpect( status().isCreated() )
-            .andExpect( jsonPath("id").value(101L))
-            .andExpect( jsonPath("title").value(dto.getTitle()) )
-            .andExpect( jsonPath("author").value(dto.getAuthor()) )
-            .andExpect( jsonPath("isbn").value(dto.getIsbn()) );
+                .perform(request)
+                .andExpect( status().isCreated() )
+                .andExpect( jsonPath("id").value(101L))
+                .andExpect( jsonPath("title").value(dto.getTitle()) )
+                .andExpect( jsonPath("author").value(dto.getAuthor()) )
+                .andExpect( jsonPath("isbn").value(dto.getIsbn()) );
     }
 
     @Test
@@ -109,10 +112,10 @@ public class BookControllerTest {
         //Cenário (given)
         long id = 1l;
         Book book = Book.builder().id(id)
-                        .title(createNewBook().getTitle())
-                        .author(createNewBook().getAuthor())
-                        .isbn(createNewBook().getIsbn())
-                        .build();
+                .title(createNewBook().getTitle())
+                .author(createNewBook().getAuthor())
+                .isbn(createNewBook().getIsbn())
+                .build();
 
         BDDMockito.given(service.getById(id)).willReturn(Optional.of(book));
 
@@ -122,12 +125,12 @@ public class BookControllerTest {
                 .accept(MediaType.APPLICATION_JSON);
 
         mvc
-            .perform(request)
-            .andExpect( status().isOk() )
-            .andExpect( jsonPath("id").value(id))
-            .andExpect( jsonPath("title").value(createNewBook().getTitle()) )
-            .andExpect( jsonPath("author").value(createNewBook().getAuthor()) )
-            .andExpect( jsonPath("isbn").value(createNewBook().getIsbn()) );
+                .perform(request)
+                .andExpect( status().isOk() )
+                .andExpect( jsonPath("id").value(id))
+                .andExpect( jsonPath("title").value(createNewBook().getTitle()) )
+                .andExpect( jsonPath("author").value(createNewBook().getAuthor()) )
+                .andExpect( jsonPath("isbn").value(createNewBook().getIsbn()) );
     }
 
     public void bookNotFoundTest() throws Exception {
@@ -218,11 +221,11 @@ public class BookControllerTest {
         long id = 1l;
 
         Book book = Book.builder()
-                        .id(createNewBook().getId())
-                        .title(createNewBook().getTitle())
-                        .author(createNewBook().getAuthor())
-                        .isbn(createNewBook().getIsbn())
-                        .build();
+                .id(createNewBook().getId())
+                .title(createNewBook().getTitle())
+                .author(createNewBook().getAuthor())
+                .isbn(createNewBook().getIsbn())
+                .build();
 
         BDDMockito.given(service.find(Mockito.any(Book.class), Mockito.any(Pageable.class)) )
                 .willReturn(new PageImpl<Book>(Arrays.asList(book), PageRequest.of(0,100),1));

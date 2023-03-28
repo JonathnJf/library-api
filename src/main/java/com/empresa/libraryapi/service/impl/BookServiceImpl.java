@@ -60,6 +60,6 @@ public class BookServiceImpl implements com.empresa.libraryapi.service.BookServi
         return repository.findAll(example, pageRequest);
     }
     public Optional<Book> getBookByIsbn(String isbn) {
-        return null;
+        return repository.findByIsbn(isbn);
     }
 }
